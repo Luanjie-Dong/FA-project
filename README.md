@@ -93,7 +93,7 @@ Develop a credit scorecard for predicting default risk on medical procedure loan
 
 ## 3. Grouping & Screening (`3_grouping_and_screening.ipynb`)
 **Input:** Prepared dataset (252,136 rows × 21 features, fair lending compliant)
-**Output:** 9 selected features via WOE/IV analysis (Information Value ≥ 0.02)
+**Output:** 13 selected features via WOE/IV analysis (Information Value ≥ 0.02)
 
 ### Full Analysis of All 21 Columns
 
@@ -114,8 +114,8 @@ Develop a credit scorecard for predicting default risk on medical procedure loan
 | 13 | REGION_RATING_CLIENT_W_CITY | Numeric | Binned | 0.0594 | Weak | 3 | ✅ |
 | 14 | WEEKDAY_APPR_PROCESS_START | Categorical | Binned | 0.0009 | Not Useful | 4 | ❌ |
 | 15 | ORGANIZATION_TYPE | Categorical | Binned | 0.0440 | Weak | 5 | ✅ |
-| 16 | HOUSETYPE_MODE | Categorical | Binned | 0.0234 | Weak | 2 | ❌ |
-| 17 | EMERGENCYSTATE_MODE | Categorical | Binned | 0.0251 | Weak | 2 | ❌ |
+| 16 | HOUSETYPE_MODE | Categorical | Binned | 0.0234 | Weak | 2 | ✅ |
+| 17 | EMERGENCYSTATE_MODE | Categorical | Binned | 0.0251 | Weak | 2 | ✅ |
 | 18 | DAYS_LAST_PHONE_CHANGE | Numeric | Binned | 0.0476 | Weak | 3 | ✅ |
 | 19 | avg_days_credit | Numeric | Binned | 0.1207 | Medium | 5 | ✅ |
 | 20 | num_active | Numeric | Binned | 0.0453 | Weak | 6 | ✅ |
@@ -125,22 +125,37 @@ Develop a credit scorecard for predicting default risk on medical procedure loan
 
 ### Selection Results
 - **Total Evaluated:** 21 features (6 numeric + 15 categorical, after fair lending compliance)
-- **Selected:** 11 features (7 numeric + 4 categorical after preprocessing)
-  - **Numeric (7/8):** 3 Medium strength + 4 Weak strength
-  - **Categorical (4/12):** Preprocessed with zero-event & sparse category merging
-- **Excluded (10 features):** 3 for fair lending compliance + 7 for low IV
-- **Categorical Preprocessing:** OCCUPATION_TYPE (18→6), ORGANIZATION_TYPE (57→3), etc.
+- **Selected:** 13 features (7 numeric + 6 categorical)
+  - **Numeric (7/6):** 1 Medium strength + 6 Weak strength
+  - **Categorical (6/15):** Preprocessed with zero-event & sparse category merging
+- **Excluded (8 features):** 7 for low IV (< 0.02) + 1 for technical reasons (FLAG_MOBIL)
+- **Categorical Preprocessing:** OCCUPATION_TYPE (18→6), ORGANIZATION_TYPE (57→5), etc.
+
+**Selected Features (13):**
+1. avg_days_credit (IV: 0.1207, Medium)
+2. debt_to_credit (IV: 0.0957, Weak)
+3. DAYS_EMPLOYED (IV: 0.0899, Weak)
+4. OCCUPATION_TYPE (IV: 0.0678, Weak)
+5. AMT_GOODS_PRICE (IV: 0.0670, Weak)
+6. NAME_EDUCATION_TYPE (IV: 0.0662, Weak)
+7. REGION_RATING_CLIENT_W_CITY (IV: 0.0594, Weak)
+8. DAYS_LAST_PHONE_CHANGE (IV: 0.0476, Weak)
+9. num_active (IV: 0.0453, Weak)
+10. ORGANIZATION_TYPE (IV: 0.0440, Weak)
+11. NAME_INCOME_TYPE (IV: 0.0290, Weak)
+12. EMERGENCYSTATE_MODE (IV: 0.0251, Weak)
+13. HOUSETYPE_MODE (IV: 0.0234, Weak)
 
 ---
 
 ## 4. Scorecard Generation & Tuning (`4_scorecard_generation_and_tuning.ipynb`)
-**Input:** Selected features from Step 3 (252,136 rows × 9 features, fair lending compliant)
+**Input:** Selected features from Step 3 (252,136 rows × 13 features, fair lending compliant)
 **Output:** Calibrated credit scorecard with optimal cutoff score and business impact analysis
 
 ### WOE Encoding & Feature Engineering
 - **Numeric Features:** Binned with monotonic WOE trends
 - **Categorical Features:** Preprocessed categories merged per IV analysis
-- **Result:** 19 WOE-encoded features for model training
+- **Result:** 13 WOE-encoded features + TARGET = 14 columns for model training
 
 ### Model Development
 **Logistic Regression (Class-Weighted)**
